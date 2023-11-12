@@ -9,11 +9,11 @@ const user = {
       name: "isAdmin",
       title: "Is Admin",
       type: "boolean",
-      description: "check if the user is admin",
+      description: "Check if the user is admin",
       initialValue: false,
       validation: (Rule) => Rule.required(),
-      // readOnly: true,
-      // hidden: true,
+      //   readOnly: true,
+      //   hidden: true,
     }),
     defineField({
       name: "name",
@@ -34,12 +34,22 @@ const user = {
       hidden: true,
     }),
     defineField({
+      name: "email",
+      type: "string",
+      title: "Email",
+    }),
+    defineField({
+      name: "emailVerified",
+      type: "datetime",
+      hidden: true,
+    }),
+    defineField({
       name: "about",
       title: "About",
       type: "text",
-      description: "A brief description about the user ",
+      description: "A brief dsecription about the user",
     }),
   ],
 };
 
-export default user ;
+export default user;
