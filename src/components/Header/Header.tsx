@@ -6,6 +6,7 @@ import {FaUserCircle} from "react-icons/fa";
 import { MdDarkMode, MdOutlineLightMode } from "react-icons/md";
 import { useSession } from "next-auth/react";
 import ThemeContext from "@/context/themeContext";
+import Image from "next/image";
 
 
 
@@ -24,7 +25,19 @@ const Header = () => {
           <li className="flex items-center">
             {session?.user ? (
               <Link href={`/users/${session.user.id}`}>
-                <FaUserCircle className="cursor-pointer" />
+                {session.user.image ? (
+                  <div className="w-10 h-10 rounded-full overflow-hidden">
+                    <Image
+                      src={session.user.image}
+                      alt={session.user.name!}
+                      width={40}
+                      height={40}
+                      className="scale-animation img"
+                    />
+                  </div>
+                ) : (
+                  <FaUserCircle className="cursor-pointer" />
+                )}
               </Link>
             ) : (
               <Link href="/auth">
