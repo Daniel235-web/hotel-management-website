@@ -18,7 +18,8 @@
     "react-dom": "^18",
     "react-hot-toast": "^2.4.1",
     "react-icons": "^4.11.0",
-    "sanity": "^3.19.2"
+    "sanity": "^3.19.2",
+    "swr": "^2.2.4"
   },
   "devDependencies": {
     "@types/node": "^20",

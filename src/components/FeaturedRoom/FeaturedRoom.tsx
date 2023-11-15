@@ -1,7 +1,7 @@
  "use client"
 
 
-import { Room } from "@/app/models/room";
+import { Room } from "@/models/room";
 import Image from 'next/image';
 import Link from "next/link";
 
