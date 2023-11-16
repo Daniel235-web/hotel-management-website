@@ -24,7 +24,7 @@ const RoomCard: FC<Props> = (props) => {
         className="img scale-animation"/>
       </div>
       <div className="p-4 bg-white">
-        <div className="flex justify-between text-2xl font-semibold">
+        <div className="flex justify-between text-xl font-semibold">
             <p>{name}</p>
             <p>${price}</p>
         </div>

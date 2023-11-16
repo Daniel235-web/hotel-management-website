@@ -45,7 +45,7 @@ const Search: FC<Props> = ({
               <option value="All">All</option>
               <option value="Basic">Basic</option>
               <option value="Luxury">Luxury</option>
-              <option value="Suite">Suite"</option>
+              <option value="Suite">Suite</option>
             </select>
           </div>
         </div>
