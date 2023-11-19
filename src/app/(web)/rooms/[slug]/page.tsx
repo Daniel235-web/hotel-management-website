@@ -7,11 +7,14 @@ import {LiaFireExtinguisherSolid} from "react-icons/lia"
 import {AiOutlineMedicineBox} from "react-icons/ai"
 import {GiSmokeBomb} from "react-icons/gi"
 import { getRoom } from '@/libs/apis';
+import axios from "axios";
 import BookRoomCta from "@/components/BookRoomCta/BookRoomCta";
 import LoadingSpinner from '../../loading';
 import HotelPhotoGallery from '@/components/HotelPhotoGallery/HotelPhotoGallery';
 import { useState } from "react";
 import toast from "react-hot-toast";
+import { getStripe } from "@/libs/stripe";
+
 
 
 
@@ -44,7 +47,7 @@ const RoomDetails = (props: {params: {slug: string} }) => {
         }
         return null;
       };
-      const handleBookNowClick = () => {
+      const handleBookNowClick = async () => {
         if(!checkinDate || !checkoutDate) 
         return toast.error("please provide checkin / checkout dates");
       if(checkinDate > checkoutDate) return toast.error("the checkin date can't be greater than checkout date");
@@ -53,7 +56,33 @@ const RoomDetails = (props: {params: {slug: string} }) => {
 
       const hotelRoomSlug = room.slug.current;
 
-      //integrate stripe
+      const stripe = await getStripe()
+
+      try {
+        const {data: stripeSession} = await axios.post('/api/stripe', {
+          checkinDate,
+          checkoutDate,
+          adults,
+          children: noOfChildren,
+          numberOfDays,
+          hotelRoomSlug,
+
+        });
+
+        if(stripe) {
+          const result  = await stripe.redirectToCheckout({
+            sessionId: stripeSession.id
+          });
+
+          if (result.error) {
+            toast.error("Payment failed")
+          }
+
+        }
+      } catch (error) {
+        console.log("Error:", error);
+        toast.error("An error occured here")
+      }
       };
        const calcNumDays = () => {
          if (!checkinDate || !checkoutDate) return;

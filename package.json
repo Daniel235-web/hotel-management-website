@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@sanity/vision": "^3.19.2",
+    "@stripe/stripe-js": "^2.1.7",
     "axios": "^1.6.2",
     "next": "13.5.4",
     "next-auth": "^4.24.5",
@@ -21,6 +22,7 @@
     "react-hot-toast": "^2.4.1",
     "react-icons": "^4.11.0",
     "sanity": "^3.19.2",
+    "stripe": "^13.0.0",
     "swr": "^2.2.4"
   },
   "devDependencies": {
