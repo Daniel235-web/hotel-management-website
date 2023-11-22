@@ -14,6 +14,7 @@ import HotelPhotoGallery from '@/components/HotelPhotoGallery/HotelPhotoGallery'
 import { useState } from "react";
 import toast from "react-hot-toast";
 import { getStripe } from "@/libs/stripe";
+import RoomReview from "@/components/RoomReview/RoomReview";
 
 
 
@@ -167,7 +168,7 @@ const RoomDetails = (props: {params: {slug: string} }) => {
                   <p className="md:text-lg font-semibold">Customer reviews</p>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {/*Reviews */}
+                  <RoomReview roomId={room._id} />
                 </div>
               </div>
             </div>

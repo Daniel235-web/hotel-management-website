@@ -1,22 +1,22 @@
 "use client";
 
 import useSWR from "swr";
+import { FaSignOutAlt } from "react-icons/fa";
 import Image from "next/image";
 import axios from "axios";
 import { signOut } from "next-auth/react";
 
 import { getUserBookings } from "@/libs/apis";
-
 import { User } from "@/models/user";
-
 import LoadingSpinner from "../../loading";
-import { FaSignOutAlt } from "react-icons/fa";
 import { useState } from "react";
 import { BsJournalBookmarkFill } from "react-icons/bs";
 import { GiMoneyStack } from "react-icons/gi";
 import Table from "@/components/Table/Table";
 import Chart from "@/components/Chart/Chart";
-
+import RatingModal from "@/components/RatingModal/RatingModal";
+import BackDrop from "@/components/BackDrop/BackDrop";
+import toast from "react-hot-toast";
 
 const UserDetails = (props: { params: { id: string } }) => {
   const {
@@ -24,7 +24,7 @@ const UserDetails = (props: { params: { id: string } }) => {
   } = props;
 
   const [currentNav, setCurrentNav] = useState<
-  "bookings" | "amount" | "ratings"
+    "bookings" | "amount" | "ratings"
   >("bookings");
   const [roomId, setRoomId] = useState<string | null>(null);
   const [isRatingVisible, setIsRatingVisible] = useState(false);
@@ -32,11 +32,43 @@ const UserDetails = (props: { params: { id: string } }) => {
   const [ratingValue, setRatingValue] = useState<number | null>(0);
   const [ratingText, setRatingText] = useState("");
 
+  const toggleRatingModal = () => setIsRatingVisible((prevState) => !prevState);
+
+  const reviewSubmitHandler = async () => {
+    if (!ratingText.trim().length || !ratingValue) {
+      return toast.error("Please provide a rating text and a rating");
+    }
+
+    if (!roomId) toast.error("Id not provided");
+
+    setIsSubmittingReview(true);
+
+    try {
+      const { data } = await axios.post("/api/users", {
+        reviewText: ratingText,
+        ratingValue,
+        roomId,
+      });
+      console.log(data);
+      toast.success("Review Submitted");
+    } catch (error) {
+      console.log(error);
+      toast.error("Review Failed");
+    } finally {
+      setRatingText("");
+      setRatingValue(null);
+      setRoomId(null);
+      setIsSubmittingReview(false);
+      setIsRatingVisible(false);
+    }
+  };
+
   const fetchUserBooking = async () => getUserBookings(userId);
   const fetchUserData = async () => {
-    const {data}  = await axios.get<User>("/api/users");
+    const { data } = await axios.get<User>("/api/users");
     return data;
   };
+
   const {
     data: userBookings,
     error,
@@ -44,27 +76,23 @@ const UserDetails = (props: { params: { id: string } }) => {
   } = useSWR("/api/userbooking", fetchUserBooking);
 
   const {
-    data: userData, 
-    isLoading: isLoadingUserData, 
+    data: userData,
+    isLoading: loadingUserData,
     error: errorGettingUserData,
-} = useSWR("/api/users", fetchUserData);
+  } = useSWR("/api/users", fetchUserData);
 
-  if (error || errorGettingUserData ) throw new Error("Cannot fetch data");
+  if (error || errorGettingUserData) throw new Error("Cannot fetch data");
   if (typeof userBookings === "undefined" && !isLoading)
     throw new Error("Cannot fetch data");
-  if (typeof userData === "undefined" && !isLoadingUserData)
+  if (typeof userData === "undefined" && !loadingUserData)
     throw new Error("Cannot fetch data");
 
-    if (isLoadingUserData) return <LoadingSpinner />;
-    if (!userData) throw new Error("Cannot fetch data"); 
-
-
-    function toggleRatingModal(): void {
-        throw new Error("Function not implemented.");
-    }
+  if (loadingUserData) return <LoadingSpinner />;
+  if (!userData) throw new Error("Cannot fetch data");
+  if (!userData) throw new Error("Cannot fetch data");
 
   return (
-    <div className="container mx-auto px-2 md:px-4 py-10">
+    <div className="container mx-auto px-2 md:px-4 py10">
       <div className="grid md:grid-cols-12 gap-10">
         <div className="hidden md:block md:col-span-4 lg:col-span-3 shadow-lg h-fit sticky top-10 bg-[#eff0f2] text-black rounded-lg px-6 py-4">
           <div className="md:w-[143px] w-28 h-28 md:h-[143px] mx-auto mb-5 rounded-full overflow-hidden">
@@ -108,6 +136,7 @@ const UserDetails = (props: { params: { id: string } }) => {
           <p className="block w-fit md:hidden text-sm py-2">
             {userData.about ?? ""}
           </p>
+
           <p className="text-xs py-2 font-medium">
             Joined In {userData._createdAt.split("T")[0]}
           </p>
@@ -163,6 +192,7 @@ const UserDetails = (props: { params: { id: string } }) => {
           ) : (
             <></>
           )}
+
           {currentNav === "amount" ? (
             userBookings && <Chart userBookings={userBookings} />
           ) : (
@@ -170,6 +200,18 @@ const UserDetails = (props: { params: { id: string } }) => {
           )}
         </div>
       </div>
+
+      <RatingModal
+        isOpen={isRatingVisible}
+        ratingValue={ratingValue}
+        setRatingValue={setRatingValue}
+        ratingText={ratingText}
+        setRatingText={setRatingText}
+        isSubmittingReview={isSubmittingReview}
+        reviewSubmitHandler={reviewSubmitHandler}
+        toggleRatingModal={toggleRatingModal}
+      />
+      <BackDrop isOpen={isRatingVisible} />
     </div>
   );
 };
